@@ -1,25 +1,23 @@
 #!/bin/bash
 ###
-# @Author Martin Bortel
-# @Email  martin.bortel@gmail.com
+# @Author Martin Bortel <martin.bortel@gmail.com>
 # @Created  22/08/2018
-# @Updated  29/01/2019
+# @Updated  31/01/2019
 # 
 # @Package  bash_scripts
-#
 ###
 
-function f_s_init(){ 
-  # def vars
-  handle=''
-  script_name=$0
-  EXP_ARGS=1
-
-  N_INPUT_ARGS=$#
-  ERR=0
-
-  USAGE=1
-
+function f_s_init(){
+	# def vars
+	handle=''
+	script_name=$0
+	EXP_ARGS=1
+	
+	N_INPUT_ARGS=$#
+	ERR=0
+	
+	USAGE=1
+	
   path=$(pwd)
   # Init generic functions
   # LOG_FILE=/path/to/log/file
@@ -32,100 +30,113 @@ function f_s_init(){
 }
 function f_s_bo() {
 log " --
- | Handling $handle - copy .vim* .bash* .gitconfig .ssh/id_rsa .ssh/id_rsa.pub to cloud virtual machine
-  -"
+| Handling $handle - copy .vim* .bash* .gitconfig .ssh/id_rsa .ssh/id_rsa.pub to cloud virtual machine
+ -"
 }
 function f_s_eo() {
-  if [[ $USAGE == 1 ]];then
-    # if f_s_usage called, do not print eof
-    log " -"
-    log "| eo"
-    log " --"
-  fi
+	if [[ $USAGE == 1 ]];then
+		# if f_s_usage called, do not print eof
+		log " -"
+		log "| eo"
+		log " --"
+	fi
 }
 function f_s_usage() {
 
-  USAGE=0 # Usage is called, do not print eof
+	USAGE=0	# Usage is called, do not print eof
 
-  log " -"
-  log "| Usage $script_name {-i|--ip-address}"
-  log " --"
-} 
+    log " -"
+    log "| Usage $script_name {-i|--ip-address}"
+    log " --"
+}
 function f_get_options(){
-  #'Options manager: get arguments from cli and parse them'
-  while [[ $# -ge 1 ]]  # -ge (greater or equal) because of --help (does not have pair = therefore in that case $# will be equal to 1)
-  do  #; echo "key: "$1", value: "$2", remaining number: "$#
-    if [[ $2 == "" || $2 == "-"* ]];then
-      ERR="EMPTY_VALUE"
-      ERR_OPT=$1
-      break
-    else
-      case $1 in
-        -i|--ip-address)
-          REMOTE_IP="$2"
-          shift
-          ;;
-        *)
-          # unknown option
-          ERR="UNKNOWN_OPT"
-          ERR_OPT=$@
-          ;;
-      esac
-      shift # past argument or value
-    fi
-  done
-  if [[ $N_INPUT_ARGS == 0 ]];then
-    ERR="USAGE"
-  elif [[ $ERR == 0 ]]; then # $ERR == False
-    if [[ $REMOTE_IP == "" ]]; then
-      ERR="BAD_MANDATORY"
-    fi
-  fi
+	#'Options manager: get arguments from cli and parse them'
+	while [[ $# -ge 1 ]]	# -ge (greater or equal) because of --help (does not have pair = therefore in that case $# will be equal to 1)
+    do	#; echo "key: "$1", value: "$2", remaining number: "$#
+		if [[ $2 == "" || $2 == "-"* ]];then
+			ERR="EMPTY_VALUE"
+			ERR_OPT=$1
+			break
+		else
+			case $1 in
+			-i|--ip-address)
+				REMOTE_IP="$2"
+				shift
+				;;
+			*)
+				# unknown option
+				ERR="UNKNOWN_OPT"
+				ERR_OPT=$@
+				;;
+			esac
+			shift # past argument or value
+		fi
+	done
+	if [[ $N_INPUT_ARGS == 0 ]];then
+		ERR="USAGE"
+	elif [[ $ERR == 0 ]]; then # $ERR == False
+		if [[ $REMOTE_IP == "" ]]; then
+			ERR="BAD_MANDATORY"
+		fi
+	fi
 } 
 function f_manage_err(){
-  #'Error manager: take internal error and convert it to sensible output/exit code'
-  case $ERR in
-    "USAGE")
-      f_s_usage
-      ;;
-    "UNKNOWN_OPT")
-      log e "Unknown option used, please verify your syntax."
-      log e "Input arguments used: "$@
-      log e "Unknown argument: "$ERR_OPT
-      f_s_usage
-      ;;
-    "BAD_MANDATORY")
-      log e "Some mandatory parameter is missing, please consult usage."
-      f_s_usage
-      ;;
-    "EMPTY_VALUE")
-      log e "Attribute value cannot be empty. Please correct syntax of the attribute: $ERR_OPT"
-      f_s_usage
-      ;;
-    #   "INPUT_NOT_A_DIRECTORY")
-      #     log e "$INPUT path does not exist. Check your INPUT directory."
-      #     ;;
-    #   "OUTPUT_NOT_A_DIRECTORY")
-      #     log w "$OUTPUT path does not exist. Creating it for you."
-      #     [ $(mkdir $OUTPUT) ] && log i "$OUTPUT created"
-      #     f_set_defaults
-      #     f_main
-      #     ;;
-    *)
-      log e "Unknown error."
-      f_s_usage
-      ;;
-  esac
+	#'Error manager: take internal error and convert it to sensible output/exit code'
+    case $ERR in
+		"USAGE")
+			f_s_usage
+			;;
+		"UNKNOWN_OPT")
+			log e "Unknown option used, please verify your syntax."
+			log e "Input arguments used: "$@
+			log e "Unknown argument: "$ERR_OPT
+			f_s_usage
+			;;
+		"BAD_MANDATORY")
+			log e "Some mandatory parameter is missing, please consult usage."
+			f_s_usage
+			;;
+		"EMPTY_VALUE")
+			log e "Attribute value cannot be empty. Please correct syntax of the attribute: $ERR_OPT"
+			f_s_usage
+			;;
+#		"INPUT_NOT_A_DIRECTORY")
+#			log e "$INPUT path does not exist. Check your INPUT directory."
+#			;;
+#		"OUTPUT_NOT_A_DIRECTORY")
+#			log w "$OUTPUT path does not exist. Creating it for you."
+#			[ $(mkdir $OUTPUT) ] && log i "$OUTPUT created"
+#			f_set_defaults
+#			f_main
+#			;;
+      *)
+        log e "Unknown error."
+        f_s_usage
+        ;;
+		esac
 }
 function f_main() {
-  # One function to rule them all ..
-  log i "Upload config to remote machine $REMOTE_IP."
-  log i "rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub root@$REMOTE_IP:~/"
-  rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub root@$REMOTE_IP:~/
+#put here the code
+	log i "rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub root@$REMOTE_IP:~/"
+	#rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ~/bin/rpm root@$REMOTE_IP:~/
 
-  log i "Upload RPMs and install"
-  rsync -avz ./rpm/* root@REMOTE_IP:~/
-  ssh root@REMOTE_IP -c "yum install *.rpm -y"
+	for rpm in $(ls ~/bin/rpm);do
+		log i "Attemting to install $rpm on $REMOTE_IP"
+		ssh root@$REMOTE_IP bash -c "'
+			if [[ -f /root/rpm/$rpm ]];then
+				yum install -y /root/rpm/$rpm
+			fi
+		'"
+	done
+	
+	if [[ $(ssh root@$REMOTE_IP 'rpm -qa | grep tmux') ]];then
+		log i "Tmux is installed on remote machine - provision .tmux.conf"
+		if [[ -f $HOME/bin/tpl/tmux.conf.remote ]];then
+			rsync $HOME/bin/tpl/tmux.conf.remote root@$REMOTE_IP:/root/.tmux.conf
+		else
+			log e "$HOME/bin/tpl/tmux.conf.remote template file does not exist. Take care with usage of remote tmux."
+		fi
+	fi
 }
 
 #@run the code
@@ -133,9 +144,9 @@ f_s_init $@
 f_s_bo
 f_get_options $@
 if [[ $ERR == 0 ]];then
-  f_main
+	f_main
 else
-  f_manage_err
+	f_manage_err
 fi
 ##
 f_s_eo
