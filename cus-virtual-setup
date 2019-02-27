@@ -2,7 +2,7 @@
 ###
 # @Author Martin Bortel <martin.bortel@gmail.com>
 # @Created  22/08/2018
-# @Updated  31/01/2019
+# @Updated  25/02/2019
 # 
 # @Package  bash_scripts
 ###
@@ -117,8 +117,15 @@ function f_manage_err(){
 }
 function f_main() {
 #put here the code
-	log i "rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub root@$REMOTE_IP:~/"
-	#rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ~/bin/rpm root@$REMOTE_IP:~/
+
+#	log i "rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub root@$REMOTE_IP:~/"
+#	rsync -avz ~/.vim* ~/.bash* ~/.gitconfig ~/.ssh/id_rsa ~/.ssh/id_rsa.pub ~/bin/rpm root@$REMOTE_IP:~/
+
+  ssh root@$REMOTE_IP mkdir /git
+  for repo in {bortelm_customizations,bortelm_cus-plg,bortelm_cus-sop,bortelm_tools,bortelm_documentation};do
+    ssh root@$REMOTE_IP cd /git; git clone ssh://git@at.mavenir.com:7999/~bortelm/$repo.git
+  done
+  exit
 
 	for rpm in $(ls ~/bin/rpm);do
 		log i "Attemting to install $rpm on $REMOTE_IP"
